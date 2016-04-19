@@ -268,9 +268,9 @@ public class TextureVideoView extends ScalableTextureView
     }
 
     public void stop() {
-        if(isInPlaybackState()) {
+//        if(isInPlaybackState()) {
             mVideoHandler.obtainMessage(MSG_STOP).sendToTarget();
-        }
+//        }
         mTargetState = STATE_PLAYBACK_COMPLETED;
     }
 

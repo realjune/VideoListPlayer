@@ -4,14 +4,17 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import com.waynell.videolist.demo.model.VideoListItem;
 import com.waynell.videolist.visibility.calculator.DefaultSingleItemCalculatorCallback;
 import com.waynell.videolist.visibility.calculator.SingleListViewItemActiveCalculator;
+import com.waynell.videolist.visibility.items.ListItemData;
 import com.waynell.videolist.visibility.scroll.ItemsPositionGetter;
 import com.waynell.videolist.visibility.scroll.RecyclerViewItemPositionGetter;
+import com.waynell.videolist.visibility.utils.Config;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +32,8 @@ public class MainActivity extends AppCompatActivity {
     private ItemsPositionGetter mItemsPositionGetter;
 
     private List<VideoListItem> mListItems = new ArrayList<>();
+
+    private VideoListAdapter mVideoListAdapter = new VideoListAdapter();
 
     private SingleListViewItemActiveCalculator mCalculator = new SingleListViewItemActiveCalculator(new
             DefaultSingleItemCalculatorCallback(), mListItems);
@@ -75,13 +80,13 @@ public class MainActivity extends AppCompatActivity {
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(layoutManager);
-        mRecyclerView.setAdapter(new VideoListAdapter());
+        mRecyclerView.setAdapter(mVideoListAdapter);
         mItemsPositionGetter = new RecyclerViewItemPositionGetter(layoutManager, mRecyclerView);
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 mScrollState = newState;
-                if(newState == RecyclerView.SCROLL_STATE_IDLE && !mListItems.isEmpty()){
+                if (newState == RecyclerView.SCROLL_STATE_IDLE && !mListItems.isEmpty()) {
                     mCalculator.onScrollStateIdle(mItemsPositionGetter);
                 }
             }
@@ -113,4 +118,16 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        if (Config.SHOW_LOGS) {
+            Log.d(Config.TAG, "onStart first:" + mItemsPositionGetter.getFirstVisiblePosition() + " last:" + mItemsPositionGetter.getLastVisiblePosition());
+            if (!mCalculator.resume()) {
+                if (mVideoListAdapter.getItemCount() > 0) {
+                    mCalculator.setFirstItem(mItemsPositionGetter);
+                }
+            }
+        }
+    }
 }

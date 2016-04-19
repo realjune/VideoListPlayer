@@ -5,6 +5,7 @@ package com.waynell.videolist.visibility.utils;
  */
 public class Config {
 
-    public static final boolean SHOW_LOGS = false;
+    public static final boolean SHOW_LOGS = true;
+    public static final String TAG = "VideoListPlayer";
 
 }
